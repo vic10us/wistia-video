@@ -210,9 +210,9 @@
               that._data = vid.data;
             }
             count++;
-            if (count > 10) clearTimeout(checkforWistia);
+            if (count > 1000) clearTimeout(checkforWistia);
           }
-        }, 100);
+        }, 250);
       },
       _howLongAgo: function(modified, n) {
         if (!!!modified) return "-";
