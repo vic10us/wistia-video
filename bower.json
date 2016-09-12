@@ -3,6 +3,7 @@
   "main": "wistia-video.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
+    "paper-styles": "PolymerElements/paper-styles#^1.1.4",
     "moment": "^2.14.1",
     "chance": "^1.0.3"
   },

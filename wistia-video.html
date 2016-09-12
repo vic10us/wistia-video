@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
 <script src="//fast.wistia.com/assets/external/E-v1.js"></script>
 <script src="../moment/moment.js"></script>
 <script src="../chance/chance.js"></script>
@@ -12,14 +13,19 @@
       }
       .paper-font-body1 {
         @apply(--paper-font-body1);
+      }
+      .small {
+      }
+      .normal {
         width: 220px;
-        height: 200px;
+        aheight: 200px;
       }
       .video_title {
         @apply(--paper-font-body2);
         line-height: 1;
-        overflow: hidden;
         text-overflow: ellipsis;
+        white-space: normal;
+        overflow: hidden;
         margin: 0 auto;
         padding: 0;
       }
@@ -31,20 +37,40 @@
         @apply(--paper-font-caption);
         position: relative;
         line-height: 1.3;
-        top: -5px;
-        margin: 0;
+        padding-top: 10px;
         margin-bottom: 5px;
         padding-bottom: 5px;
-        padding-left: 10px;
         padding-right: 10px;
+      }
+      .normal > .video_metadata {
+        top: -10px;
+        margin: 0;
+        padding-left: 10px;
+      }
+      .large > .video_metadata {
+        top: -5px;
+        margin: 0;
+        padding-left: 10px;
       }
       .wistia_embed {
         overflow: hidden;
         border: solid 1px var(--acquisio-light-blue, #34b6e4);
-        display: inline-block;
+        display: block;
         margin: 10px;
+      }
+      .normal > .wistia_embed {
         height: 113px;
         width: 200px;
+      }
+      .small > .wistia_embed {
+        height: 42px;
+        width: 74px;
+        float: left;
+      }
+      .large > .wistia_embed {
+        height: 215px;
+        width: 380px;
+        max-width: 93%;
       }
       .video_stats {
         @apply(--paper-font-caption);
@@ -59,7 +85,7 @@
       ul.video_stats li {
         display: inline-block;
       }
-      ul.video_stats li:last-child:before {
+      ul.video_stats li:not(:first-child):before {
         content: '\002022';
         margin: 0 5px;
       }
@@ -71,9 +97,11 @@
         margin: 0 5px;
       }
     </style>
-
-    <div class="paper-font-body1">
-      <span id$="video_[[videoId]]_[[uuid]]" class$="wistia_embed wistia_async_[[videoId]] popover=true popoverAnimateThumbnail=true videoFoam=true">&nbsp;</span>
+    <iron-ajax id$="data_[[uuid]]" url$="//fast.wistia.com/embed/medias/[[videoId]].json" handle-as="json" last-response="{{_data}}" auto>      
+    </iron-ajax>
+    <div class$="paper-font-body1 [[size]]">
+      <!--<iframe class="wistia_embed" src$="http://fast.wistia.com/embed/iframe/[[videoId]]?version=v1&popoverAnimateThumbnail=true&playerColor=34b6e4&embedType=async_popover"></iframe>-->
+      <span id$="video_[[videoId]]_[[uuid]]" class$="wistia_embed wistia_async_[[videoId]] playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4">&nbsp;</span>
       <div class="video_metadata" alt$="[[title]]">
         <div hidden$="[[_hasData]]" class="loading">Loading...</div>
         <div hidden$="[[!_hasData]]">
@@ -82,6 +110,7 @@
           <ul class="video_stats">
             <li>[[_formatNumber(views)]] views</li>
             <li>[[_howLongAgo(lastModified, _refresh)]]</li>
+            <li>[[duration]]</li>
           </ul>
         </div>
       </div>
@@ -122,6 +151,10 @@
           type: String,
           notify: true
         },
+        size: {
+          type: String,
+          value: 'normal'
+        },
         title: {
           type: String,
           notify: true,
@@ -129,6 +162,11 @@
         },
         author: {
           type: String
+        },
+        duration: {
+          type: String,
+          notify: true,
+          relectToAttribute: true
         },
         lastModified: {
           type: Date
@@ -171,6 +209,8 @@
           elem.innerHTML = newValue.media.name;
           this.title = this.title || decodeURI(elem.value);
           this.lastModified = new Date(newValue.media.createdAt*1000);
+          var dur = moment.duration(newValue.media.duration, 's');
+          this.duration = Math.floor(dur.asMinutes()) + ':' + dur.seconds();
         }
       },
       _refreshChanged: function(newValue, oldValue) {
@@ -201,7 +241,7 @@
         var that = this;
         var count = 0;
         this.uuid = uuid();
-        var checkforWistia = setInterval(function() {
+        /*var checkforWistia = setInterval(function() {
           if (!!Wistia) {
             var vid = Wistia.api('video_' + that.videoId + '_' + that.uuid);
             if (!!vid && !!vid.data && !!vid.data.media && !!vid.data.media.stats) {
@@ -212,7 +252,7 @@
             count++;
             if (count > 1000) clearTimeout(checkforWistia);
           }
-        }, 250);
+        }, 250);*/
       },
       _howLongAgo: function(modified, n) {
         if (!!!modified) return "-";

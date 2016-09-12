@@ -13,7 +13,35 @@
     <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
     <link rel="import" href="../../paper-card/paper-card.html">
     <link rel="import" href="../wistia-video.html">
-    
+    <link rel="import" href="../wistia-video-list.html">
+    <script>
+      var myvideos = [
+        {
+          videoId: "lgg6kl17pc"
+        },
+        {
+          videoId: "2mq1h2enwi"
+        },
+        {
+          videoId: "lgg6kl17pc"
+        },
+        {
+          videoId: "2mq1h2enwi"
+        },
+        {
+          videoId: "lgg6kl17pc"
+        },
+        {
+          videoId: "2mq1h2enwi"
+        },
+        {
+          videoId: "lgg6kl17pc"
+        },
+        {
+          videoId: "2mq1h2enwi"
+        },
+      ];
+    </script>
     <style is="custom-style" include="demo-pages-shared-styles iron-flex iron-flex-alignment">
       paper-card {
         border-top: solid 4px #34b6e4;
@@ -40,14 +68,12 @@
       <h3>Basic wistia-video Demo</h3>
       <demo-snippet>
         <template>
-          <wistia-video 
-            video-id="lgg6kl17pc"
-            size="small"
-            auto-refresh></wistia-video>
+          <wistia-video-list id="myVideoList"></wistia-video-list>
         </template>
       </demo-snippet>
       <br/>
-      <paper-card>
+      
+      <!--<paper-card>
         <div class="layout vertical">
           <div class="box-title">Videos</div>
           <div>
@@ -81,7 +107,7 @@
             <paper-button>More</paper-button>
           </div>
         </div>
-      </paper-card>
+      </paper-card>-->
       <br/>
       <demo-snippet>
         <template>
@@ -94,6 +120,12 @@
         </template>
       </demo-snippet>
     </div>
-
+    <script>
+        window.addEventListener('WebComponentsReady', function(e) {
+          // imports are loaded and elements have been registered
+            window.videoList = document.querySelector('#myVideoList');
+            videoList.videos = myvideos;
+        });
+    </script>
   </body>
 </html>
