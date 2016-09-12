@@ -13,6 +13,7 @@
     <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
     <link rel="import" href="../../paper-card/paper-card.html">
     <link rel="import" href="../wistia-video.html">
+    <link rel="import" href="../wistia-video-list.html">
     
     <style is="custom-style" include="demo-pages-shared-styles iron-flex iron-flex-alignment">
       paper-card {
@@ -50,33 +51,7 @@
       <paper-card>
         <div class="layout vertical">
           <div class="box-title">Videos</div>
-          <div>
-              <wistia-video 
-                video-id="lgg6kl17pc"
-                size="large"
-                auto-refresh></wistia-video>
-          </div>
-          <div>
-              <wistia-video 
-                video-id="2mq1h2enwi"
-                size="small"
-                author="SuperAwesomeAuthor"
-                auto-refresh></wistia-video>
-          </div>
-          <div>
-              <wistia-video 
-                video-id="lgg6kl17pc"
-                size="small"
-                author="SuperAwesomeAuthor"
-                auto-refresh></wistia-video>
-          </div>
-          <div>
-              <wistia-video 
-                video-id="lgg6kl17pc"
-                size="small"
-                author="SuperAwesomeAuthor"
-                auto-refresh></wistia-video>
-          </div>
+          <wistia-video-list videos='[{"videoId": "lgg6kl17pc"},{"videoId": "2mq1h2enwi"},{"videoId": "lgg6kl17pc"},{"videoId": "2mq1h2enwi"},{"videoId": "lgg6kl17pc"},{"videoId": "2mq1h2enwi"},{"videoId": "lgg6kl17pc"},{"videoId": "2mq1h2enwi"}]'></wistia-video-list>
           <div class="layout horizontal end-justified">
             <paper-button>More</paper-button>
           </div>
