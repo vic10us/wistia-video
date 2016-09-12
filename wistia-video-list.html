@@ -9,7 +9,7 @@
     <style include="iron-flex iron-flex-alignment">
     </style>
     <div class="layout vertical">
-      <template is="dom-repeat" items="[[_selectedVideos]]" on-dom-change="_domChanged">
+      <template id="videoListTemplate" is="dom-repeat" items="[[_selectedVideos]]" on-dom-change="_domChanged">
         <div>
           <wistia-video 
             video-id="[[item.videoId]]"

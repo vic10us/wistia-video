@@ -42,12 +42,12 @@
         padding-bottom: 5px;
         padding-right: 10px;
       }
-      .normal > .video_metadata {
+      .normal .video_metadata {
         top: -10px;
         margin: 0;
         padding-left: 10px;
       }
-      .large > .video_metadata {
+      .large .video_metadata {
         top: -5px;
         margin: 0;
         padding-left: 10px;
@@ -58,16 +58,16 @@
         display: block;
         margin: 10px;
       }
-      .normal > .wistia_embed {
+      .normal .wistia_embed {
         height: 113px;
         width: 200px;
       }
-      .small > .wistia_embed {
+      .small .wistia_embed {
         height: 42px;
         width: 74px;
         float: left;
       }
-      .large > .wistia_embed {
+      .large .wistia_embed {
         height: 215px;
         width: 380px;
         max-width: 93%;
@@ -100,12 +100,13 @@
     <iron-ajax id$="data_[[uuid]]" url$="//fast.wistia.com/embed/medias/[[videoId]].json" handle-as="json" last-response="{{_data}}" auto>      
     </iron-ajax>
     <div class$="paper-font-body1 [[size]]">
-      <!--<iframe class="wistia_embed" src$="http://fast.wistia.com/embed/iframe/[[videoId]]?version=v1&popoverAnimateThumbnail=true&playerColor=34b6e4&embedType=async_popover"></iframe>-->
-      <span id$="video_[[videoId]]_[[uuid]]" class$="wistia_embed wistia_async_[[videoId]] playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4">&nbsp;</span>
+      <div id="videoContainer">
+        <span id$="video_[[uuid]]_[[videoId]]" class$="wistia_embed wistia_async_[[videoId]] playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4">&nbsp;</span>
+      </div>
       <div class="video_metadata" alt$="[[title]]">
         <div hidden$="[[_hasData]]" class="loading">Loading...</div>
         <div hidden$="[[!_hasData]]">
-          <div class="video_title">[[title]]</div>
+          <div class="video_title">[[_title]]</div>
           <span class="video_author">[[author]]</span>
           <ul class="video_stats">
             <li>[[_formatNumber(views)]] views</li>
@@ -145,6 +146,12 @@
       properties: {
         videoId: {
           type: String,
+          notify: true,
+          observer: '_videoIdChanged'
+        },
+        _selectedVideo: {
+          type: Array,
+          value: [],
           notify: true
         },
         uuid: {
@@ -159,6 +166,10 @@
           type: String,
           notify: true,
           reflectToAttribute: true
+        },
+        _title: {
+          type: String,
+          notify: true
         },
         author: {
           type: String
@@ -207,7 +218,7 @@
           this.views = newValue.media.stats.loadCount;
           var elem = document.createElement('textarea');
           elem.innerHTML = newValue.media.name;
-          this.title = this.title || decodeURI(elem.value);
+          this._title = this.title || decodeURI(elem.value);
           this.lastModified = new Date(newValue.media.createdAt*1000);
           var dur = moment.duration(newValue.media.duration, 's');
           this.duration = Math.floor(dur.asMinutes()) + ':' + dur.seconds();
@@ -233,6 +244,13 @@
             that._refresh = !that._refresh;
           }, 5000);
       },
+      _videoIdChanged: function(n, o) {
+        console.log('new: '+ n, 'old:' + o);
+        if (!!o) {
+          var vc = this.$.videoContainer;
+          vc.innerHTML = '<span id="video_'+this.uuid+'_'+this.videoId+'" class="wistia_embed wistia_async_'+this.videoId+' playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4 style-scope wistia-video">&nbsp;</span>';
+        }
+      },
       _clearRefresh: function() {
         clearInterval(this._interval);
       },
@@ -241,18 +259,6 @@
         var that = this;
         var count = 0;
         this.uuid = uuid();
-        /*var checkforWistia = setInterval(function() {
-          if (!!Wistia) {
-            var vid = Wistia.api('video_' + that.videoId + '_' + that.uuid);
-            if (!!vid && !!vid.data && !!vid.data.media && !!vid.data.media.stats) {
-              clearTimeout(checkforWistia);
-              console.log("Found Video!", vid);
-              that._data = vid.data;
-            }
-            count++;
-            if (count > 1000) clearTimeout(checkforWistia);
-          }
-        }, 250);*/
       },
       _howLongAgo: function(modified, n) {
         if (!!!modified) return "-";
