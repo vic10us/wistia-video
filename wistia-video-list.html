@@ -40,6 +40,14 @@
           type: Number,
           value: 4,
           notify: true
+        },
+        firstSize: {
+          type: String,
+          value: 'large'
+        },
+        size: {
+          type: String,
+          value: 'small'
         }
       },
       observers: [
@@ -57,8 +65,8 @@
       },
       _getSize: function(i) {
         console.log(i);
-        if (i === 0) return 'large';
-        return 'small';
+        if (i === 0) return this.firstSize;
+        return this.size;
       }
     });
   </script>
