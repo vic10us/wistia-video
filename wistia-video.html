@@ -149,7 +149,7 @@
           value: function() {
             return {
               author: 'Keith A. Hill <keith@dexs.ca>',
-              version: 'v1.0.1'
+              version: 'v1.0.2'
             };
           }
         },
@@ -233,7 +233,7 @@
         }
       },
       _dataChanged: function(newValue, oldValue) {
-        this._hasData = !!newValue;
+        this._hasData = (!!newValue && !!newValue.media);
         if (this._hasData) {
           this.views = newValue.media.stats.loadCount;
           var elem = document.createElement('textarea');
