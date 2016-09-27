@@ -2,7 +2,7 @@
 <link rel="import" href="../paper-styles/typography.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
-<script src="//fast.wistia.com/assets/external/E-v1.js"></script>
+<link rel="import" href="wistia-video.html">
 
 <dom-module id="wistia-video-list">
   <template>
@@ -28,12 +28,16 @@
       properties: {
         videos: {
           type: Array,
-          value: [],
+          value: function() {
+            return [];
+          },
           notify: true
         },
         _selectedVideos: {
           type: Array,
-          value: [],
+          value: function() {
+            return [];
+          },
           notify: true
         },
         maxItems: {

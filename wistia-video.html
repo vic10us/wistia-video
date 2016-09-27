@@ -144,6 +144,15 @@
       is: 'wistia-video',
 
       properties: {
+        about: {
+          type: Object,
+          value: function() {
+            return {
+              author: 'Keith A. Hill <keith@dexs.ca>',
+              version: 'v1.0.1'
+            };
+          }
+        },
         videoId: {
           type: String,
           notify: true,
@@ -151,7 +160,9 @@
         },
         _selectedVideo: {
           type: Array,
-          value: [],
+          value: function() { 
+            return [];
+          },
           notify: true
         },
         uuid: {
@@ -180,7 +191,10 @@
           relectToAttribute: true
         },
         lastModified: {
-          type: Date
+          type: Date,
+          value: function() {
+            return new Date();
+          }
         },
         views: {
           type: Number,
@@ -195,6 +209,9 @@
         },
         _data: {
           type: Object,
+          value: function() {
+            return {};
+          },
           observer: '_dataChanged'
         },
         _hasData: {
@@ -209,6 +226,9 @@
         },
         _interval: {
           type: Object,
+          value: function() {
+            return {};
+          },
           notify: true
         }
       },
