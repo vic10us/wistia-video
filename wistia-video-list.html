@@ -55,11 +55,11 @@
         }
       },
       observers: [
-        '_videosChanged(videos.*, maxItems)'
+        '_videosChanged(videos, maxItems)'
       ],
       _videosChanged: function(v, m) {
         console.log(v, m);
-        this._selectedVideos = v.value.slice(0, m);
+        this._selectedVideos = v.slice(0, m);
       },
       _domChanged: function() {
         Wistia.embeds.setup();
