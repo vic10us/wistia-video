@@ -47,7 +47,8 @@
         margin: 0;
         padding-left: 10px;
       }
-      .large .video_metadata {
+      .large .video_metadata,
+      .jumbo .video_metadata {
         top: -5px;
         margin: 0;
         padding-left: 10px;
@@ -70,6 +71,11 @@
       .large .wistia_embed {
         height: 215px;
         width: 380px;
+        max-width: 93%;
+      }
+      .jumbo .wistia_embed {
+        height: 360px;
+        width: 640px;
         max-width: 93%;
       }
       .video_stats {
@@ -151,7 +157,7 @@
           value: function() {
             return {
               author: 'Keith A. Hill <keith@dexs.ca>',
-              version: 'v1.0.2'
+              version: 'v1.0.3'
             };
           }
         },
