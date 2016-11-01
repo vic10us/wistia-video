@@ -12,6 +12,9 @@
       <template id="videoListTemplate" is="dom-repeat" items="[[_selectedVideos]]" on-dom-change="_domChanged">
         <div>
           <wistia-video 
+            hide-stats="[[hideStats]]"
+            hide-title="[[hideTitle]]"
+            hide-metadata="[[hideMetadata]]"
             video-id="[[item.videoId]]"
             size="[[_getSize(index)]]"
             auto-refresh></wistia-video>
@@ -32,6 +35,30 @@
             return [];
           },
           notify: true
+        },
+        hideMetadata: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        hideTitle: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        hideStats: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
         },
         _selectedVideos: {
           type: Array,

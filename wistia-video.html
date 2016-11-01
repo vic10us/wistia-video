@@ -103,12 +103,14 @@
       <div id="videoContainer">
         <span id$="video_[[uuid]]_[[videoId]]" class$="wistia_embed wistia_async_[[videoId]] playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4">&nbsp;</span>
       </div>
-      <div class="video_metadata" alt$="[[title]]">
+      <div hidden$="[[hideMetadata]]" class="video_metadata" alt$="[[title]]">
         <div hidden$="[[_hasData]]" class="loading">Loading...</div>
         <div hidden$="[[!_hasData]]">
-          <div class="video_title">[[_title]]</div>
-          <span class="video_author">[[author]]</span>
-          <ul class="video_stats">
+          <span hidden$="[[hideTitle]]">
+            <div class="video_title">[[_title]]</div>
+            <span class="video_author">[[author]]</span>
+          </span>
+          <ul hidden$="[[hideStats]]" class="video_stats">
             <li>[[_formatNumber(views)]] views</li>
             <li>[[_howLongAgo(lastModified, _refresh)]]</li>
             <li>[[duration]]</li>
@@ -213,6 +215,30 @@
             return {};
           },
           observer: '_dataChanged'
+        },
+        hideMetadata: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        hideTitle: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        hideStats: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
         },
         _hasData: {
           type: Boolean,
