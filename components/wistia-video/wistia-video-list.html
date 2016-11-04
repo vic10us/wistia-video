@@ -1,0 +1,104 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="wistia-video.html">
+
+<dom-module id="wistia-video-list">
+  <template>
+    <style include="iron-flex iron-flex-alignment">
+    </style>
+    <div class="layout vertical">
+      <template id="videoListTemplate" is="dom-repeat" items="[[_selectedVideos]]" on-dom-change="_domChanged">
+        <div>
+          <wistia-video 
+            hide-stats="[[hideStats]]"
+            hide-title="[[hideTitle]]"
+            hide-metadata="[[hideMetadata]]"
+            video-id="[[item.videoId]]"
+            size="[[_getSize(index)]]"
+            auto-refresh></wistia-video>
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'wistia-video-list',
+
+      properties: {
+        videos: {
+          type: Array,
+          value: function() {
+            return [];
+          },
+          notify: true
+        },
+        hideMetadata: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        hideTitle: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        hideStats: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        _selectedVideos: {
+          type: Array,
+          value: function() {
+            return [];
+          },
+          notify: true
+        },
+        maxItems: {
+          type: Number,
+          value: 4,
+          notify: true
+        },
+        firstSize: {
+          type: String,
+          value: 'large'
+        },
+        size: {
+          type: String,
+          value: 'small'
+        }
+      },
+      observers: [
+        '_videosChanged(videos, maxItems)'
+      ],
+      _videosChanged: function(v, m) {
+        console.log(v, m);
+        this._selectedVideos = v.slice(0, m);
+      },
+      _domChanged: function() {
+        Wistia.embeds.setup();
+      },
+      ready: function() {
+        Wistia.embeds.setup();
+      },
+      _getSize: function(i) {
+        console.log(i);
+        if (i === 0) return this.firstSize;
+        return this.size;
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,325 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<script src="//fast.wistia.com/assets/external/E-v1.js"></script>
+<script src="../moment/moment.js"></script>
+<script src="../chance/chance.js"></script>
+
+<dom-module id="wistia-video">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      .paper-font-body1 {
+        @apply(--paper-font-body1);
+      }
+      .small {
+      }
+      .normal {
+        width: 220px;
+        aheight: 200px;
+      }
+      .video_title {
+        @apply(--paper-font-body2);
+        line-height: 1;
+        text-overflow: ellipsis;
+        white-space: normal;
+        overflow: hidden;
+        margin: 0 auto;
+        padding: 0;
+      }
+      .video_author {
+        padding: 0;
+        color: var(--acquisio-cool-grey, #6a737b);
+      }
+      .video_metadata {
+        @apply(--paper-font-caption);
+        position: relative;
+        line-height: 1.3;
+        padding-top: 10px;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+        padding-right: 10px;
+      }
+      .normal .video_metadata {
+        top: -10px;
+        margin: 0;
+        padding-left: 10px;
+      }
+      .large .video_metadata,
+      .jumbo .video_metadata {
+        top: -5px;
+        margin: 0;
+        padding-left: 10px;
+      }
+      .wistia_embed {
+        overflow: hidden;
+        border: solid 1px var(--acquisio-light-blue, #34b6e4);
+        display: block;
+        margin: 10px;
+      }
+      .normal .wistia_embed {
+        height: 113px;
+        width: 200px;
+      }
+      .small .wistia_embed {
+        height: 42px;
+        width: 74px;
+        float: left;
+      }
+      .large .wistia_embed {
+        height: 215px;
+        width: 380px;
+        max-width: 93%;
+      }
+      .jumbo .wistia_embed {
+        height: 360px;
+        width: 640px;
+        max-width: 93%;
+      }
+      .video_stats {
+        @apply(--paper-font-caption);
+        line-height: 1;
+        padding: 0;
+        margin: 0;
+      }
+      ul.video_stats {
+        line-height: 1.1;
+        list-style: none;
+      }
+      ul.video_stats li {
+        display: inline-block;
+      }
+      ul.video_stats li:not(:first-child):before {
+        content: '\002022';
+        margin: 0 5px;
+      }
+      .loading {
+        @apply(--paper-font-body2);
+      }
+      div.loading:before {
+        content: '\27B2';
+        margin: 0 5px;
+      }
+    </style>
+    <iron-ajax id$="data_[[uuid]]" url$="//fast.wistia.com/embed/medias/[[videoId]].json" handle-as="json" last-response="{{_data}}" auto>      
+    </iron-ajax>
+    <div class$="paper-font-body1 [[size]]">
+      <div id="videoContainer">
+        <span id$="video_[[uuid]]_[[videoId]]" class$="wistia_embed wistia_async_[[videoId]] playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4">&nbsp;</span>
+      </div>
+      <div hidden$="[[hideMetadata]]" class="video_metadata" alt$="[[title]]">
+        <div hidden$="[[_hasData]]" class="loading">Loading...</div>
+        <div hidden$="[[!_hasData]]">
+          <span hidden$="[[hideTitle]]">
+            <div class="video_title">[[_title]]</div>
+            <span class="video_author">[[author]]</span>
+          </span>
+          <ul hidden$="[[hideStats]]" class="video_stats">
+            <li>[[_formatNumber(views)]] views</li>
+            <li>[[_howLongAgo(lastModified, _refresh)]]</li>
+            <li>[[duration]]</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    /**
+     * Number.prototype.format(n, x)
+     * 
+     * @param integer n: length of decimal
+     * @param integer x: length of sections
+     */
+    Number.prototype.format = function(n, x) {
+        var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
+        return this.toFixed(Math.max(0, ~~n)).replace(new RegExp(re, 'g'), '$&,');
+    };
+    
+    String.prototype.replaceAll = function(search, replacement) {
+      var target = this;
+      return target.replace(new RegExp(search, 'g'), replacement);
+    };
+
+    function uuid() {
+      return chance.guid();
+    }
+
+    Polymer({
+
+      is: 'wistia-video',
+
+      properties: {
+        about: {
+          type: Object,
+          value: function() {
+            return {
+              author: 'Keith A. Hill <keith@dexs.ca>',
+              version: 'v1.0.3'
+            };
+          }
+        },
+        videoId: {
+          type: String,
+          notify: true,
+          observer: '_videoIdChanged'
+        },
+        _selectedVideo: {
+          type: Array,
+          value: function() { 
+            return [];
+          },
+          notify: true
+        },
+        uuid: {
+          type: String,
+          notify: true
+        },
+        size: {
+          type: String,
+          value: 'normal'
+        },
+        title: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true
+        },
+        _title: {
+          type: String,
+          notify: true
+        },
+        author: {
+          type: String
+        },
+        duration: {
+          type: String,
+          notify: true,
+          relectToAttribute: true
+        },
+        lastModified: {
+          type: Date,
+          value: function() {
+            return new Date();
+          }
+        },
+        views: {
+          type: Number,
+          value: 0,
+          notify: true
+        },
+        autoRefresh: {
+          type: Boolean,
+          value: false,
+          notify: true,
+          observer: '_refreshChanged'
+        },
+        _data: {
+          type: Object,
+          value: function() {
+            return {};
+          },
+          observer: '_dataChanged'
+        },
+        hideMetadata: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        hideTitle: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        hideStats: {
+          type: Object,
+          value: function() {
+            return false;
+          },
+          notify: true,
+          reflectToAttribute: true
+        },
+        _hasData: {
+          type: Boolean,
+          value: false,
+          notify: true
+        },
+        _refresh: {
+          type: Boolean,
+          value: false,
+          notify: true
+        },
+        _interval: {
+          type: Object,
+          value: function() {
+            return {};
+          },
+          notify: true
+        }
+      },
+      _dataChanged: function(newValue, oldValue) {
+        this._hasData = (!!newValue && !!newValue.media);
+        if (this._hasData) {
+          this.views = newValue.media.stats.loadCount;
+          var elem = document.createElement('textarea');
+          elem.innerHTML = newValue.media.name;
+          this._title = this.title || decodeURI(elem.value);
+          this.lastModified = new Date(newValue.media.createdAt*1000);
+          var dur = moment.duration(newValue.media.duration, 's');
+          this.duration = Math.floor(dur.asMinutes()) + ':' + dur.seconds();
+        }
+      },
+      _refreshChanged: function(newValue, oldValue) {
+        if (newValue != oldValue) {
+          console.log('Auto-Refresh Value Changed from ' + oldValue + ' to ' + newValue);
+          if (newValue) {
+            console.log('Turning Auto-Refresh ON');
+            this._setupRefresh();
+          }
+          if (!newValue) {
+            console.log('Turning Auto-Refresh OFF');
+            this._clearRefresh();
+          }
+        }
+      },
+      _setupRefresh: function() {
+          var that = this;
+          this._clearRefresh();
+          this._interval = setInterval(function () {
+            that._refresh = !that._refresh;
+          }, 5000);
+      },
+      _videoIdChanged: function(n, o) {
+        console.log('new: '+ n, 'old:' + o);
+        if (!!o) {
+          var vc = this.$.videoContainer;
+          vc.innerHTML = '<span id="video_'+this.uuid+'_'+this.videoId+'" class="wistia_embed wistia_async_'+this.videoId+' playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4 style-scope wistia-video">&nbsp;</span>';
+        }
+      },
+      _clearRefresh: function() {
+        clearInterval(this._interval);
+      },
+      ready: function() {
+        // Do nothing for now
+        var that = this;
+        var count = 0;
+        this.uuid = uuid();
+      },
+      _howLongAgo: function(modified, n) {
+        if (!!!modified) return "-";
+        return moment(modified).fromNow();
+      },
+      _formatNumber: function(n) {
+        if (!!!n) return "-";
+        return n.format();
+      }
+    });
+  </script>
+</dom-module>

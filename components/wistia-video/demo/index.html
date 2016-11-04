@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+  <head>
+    <title>wistia-video demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../paper-button/paper-button.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+    <link rel="import" href="../../paper-card/paper-card.html">
+    <link rel="import" href="../wistia-video.html">
+    <link rel="import" href="../wistia-video-list.html">
+    
+    <style is="custom-style" include="demo-pages-shared-styles iron-flex iron-flex-alignment">
+      paper-card {
+        border-top: solid 4px #34b6e4;
+        padding-bottom: 10px;
+      }
+      .flex-vertical {
+        @apply(--layout-vertical);
+      }
+      .box-title {
+        @apply(--paper-font-title);
+        padding-left: 10px;
+        padding-top: 10px;
+        color: #6a737b;
+        background-color: #fff;
+      }
+      .flex-end-justified {
+        @apply(--layout-horizontal);
+        @apply(--layout-end-justified);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="avertical-section-container acentered">
+      <h3>Basic wistia-video Demo</h3>
+      <demo-snippet>
+        <template>
+          <wistia-video 
+            video-id="lgg6kl17pc"
+            size="small"
+            auto-refresh></wistia-video>
+        </template>
+      </demo-snippet>
+      <br/>
+      <h3>Basic wistia-video (Title Only)</h3>
+      <demo-snippet>
+        <template>
+          <wistia-video 
+            hide-stats
+            video-id="lgg6kl17pc"
+            size="small"
+            auto-refresh></wistia-video>
+        </template>
+      </demo-snippet>
+      <br/>
+      <h3>Jumbo wistia-video (Title Only)</h3>
+          <wistia-video 
+            hide-stats
+            video-id="lgg6kl17pc"
+            size="jumbo"
+            auto-refresh></wistia-video>
+      <br/>
+      <paper-card>
+        <div class="layout vertical">
+          <div class="box-title">Videos</div>
+          <wistia-video-list videos='[{"videoId": "lgg6kl17pc"},{"videoId": "2mq1h2enwi"},{"videoId": "lgg6kl17pc"},{"videoId": "2mq1h2enwi"},{"videoId": "lgg6kl17pc"},{"videoId": "2mq1h2enwi"},{"videoId": "lgg6kl17pc"},{"videoId": "2mq1h2enwi"}]'></wistia-video-list>
+          <div class="layout horizontal end-justified">
+            <paper-button>More</paper-button>
+          </div>
+        </div>
+      </paper-card>
+      <br/>
+      <demo-snippet>
+        <template>
+          <wistia-video 
+            video-id="2mq1h2enwi"
+            title="Title Override"
+            author="SuperAwesomeAuthor"
+            size="normal"
+            auto-refresh></wistia-video>
+        </template>
+      </demo-snippet>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "wistia-video",
+  "main": "wistia-video.html",
+  "version": "1.0.3",
+  "authors": [
+    "Keith A. Hill <keith@dexs.ca>"
+  ],
+  "description": "An implementation of the Wistia video popover video embed element",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "paper-styles": "PolymerElements/paper-styles#^1.1.4",
+    "moment": "^2.14.1",
+    "chance": "^1.0.3"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}
