@@ -1,9 +1,13 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
-<script src="//fast.wistia.com/assets/external/E-v1.js"></script>
+<link rel="import" href="../neon-animation/web-animations.html">
+<link rel="import" href="../neon-animation/neon-animations.html">
 <script src="../moment/moment.js"></script>
 <script src="../chance/chance.js"></script>
+<script src="//fast.wistia.com/assets/external/E-v1.js"></script>
+<link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
 
 <dom-module id="wistia-video">
   <template>
@@ -12,16 +16,13 @@
         display: block;
       }
       .paper-font-body1 {
-        @apply(--paper-font-body1);
-      }
-      .small {
+        @apply --paper-font-body1;
       }
       .normal {
         width: 220px;
-        aheight: 200px;
       }
       .video_title {
-        @apply(--paper-font-body2);
+        @apply --paper-font-body2;
         line-height: 1;
         text-overflow: ellipsis;
         white-space: normal;
@@ -34,7 +35,7 @@
         color: var(--acquisio-cool-grey, #6a737b);
       }
       .video_metadata {
-        @apply(--paper-font-caption);
+        @apply --paper-font-caption;
         position: relative;
         line-height: 1.3;
         padding-top: 10px;
@@ -62,24 +63,28 @@
       .normal .wistia_embed {
         height: 113px;
         width: 200px;
+        font-size: 75px;
       }
       .small .wistia_embed {
         height: 42px;
         width: 74px;
         float: left;
+        font-size: 30px;
       }
       .large .wistia_embed {
         height: 215px;
         width: 380px;
         max-width: 93%;
+        font-size: 100px;
       }
       .jumbo .wistia_embed {
         height: 360px;
         width: 640px;
         max-width: 93%;
+        font-size: 200px;
       }
       .video_stats {
-        @apply(--paper-font-caption);
+        @apply --paper-font-caption;
         line-height: 1;
         padding: 0;
         margin: 0;
@@ -96,18 +101,82 @@
         margin: 0 5px;
       }
       .loading {
-        @apply(--paper-font-body2);
+        @apply --paper-font-body2;
       }
       div.loading:before {
         content: '\27B2';
         margin: 0 5px;
+      }
+      .wistia_embed {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+      }
+      .wistia_embed > img {
+        width: 100%;
+        height: 100%;
+        display: inline-block;
+      }
+      .wistia_embed:before {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
+        content: "\f01d";
+        font-family: FontAwesome;
+        color: var(--acquisio-light-blue, #34b6e4);
+        opacity: .6;
+        -webkit-transition: 0.1s all ease-in-out;
+        -moz-transition: 0.1s all ease-in-out;
+        transition: 0.1s all ease-in-out;
+        text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5);
+      }
+      .wistia_embed:hover:before {
+        transform: scale(1.1) translate(-45%, -50%);
+        -webkit-transform: scale(1.1) translate(-45%, -50%);
+        opacity: 1;
+        color: var(--acquisio-light-blue, #34b6e4);
+        text-shadow: 0px 0px 30px rgb(255, 255, 255);
+      }
+      paper-dialog {
+        background-color: #424242;
+        width: 100%;
+        max-width: 90%;
+        padding: 0;
+        margin: 0;
+      }
+      .videoFrame {
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .wrap{
+        position: relative;
+        top:0;
+        left:0;
+        margin: 0;
+        padding-bottom: 56.25%;
+      }
+      .content{
+        position: absolute;
+        top:0;
+        bottom:0;
+        left:0;
+        right:0;
+        background:#424242;
+        overflow: hidden;
       }
     </style>
     <iron-ajax id$="data_[[uuid]]" url$="//fast.wistia.com/embed/medias/[[videoId]].json" handle-as="json" last-response="{{_data}}" auto>      
     </iron-ajax>
     <div class$="paper-font-body1 [[size]]">
       <div id="videoContainer">
-        <span id$="video_[[uuid]]_[[videoId]]" class$="wistia_embed wistia_async_[[videoId]] playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4">&nbsp;</span>
+        <div id$="wistia_[[videoId]]" on-tap="openVideo" class="wistia_embed">
+          <img id="thumb" />
+        </div>
       </div>
       <div hidden$="[[hideMetadata]]" class="video_metadata" alt$="[[title]]">
         <div hidden$="[[_hasData]]" class="loading">Loading...</div>
@@ -124,8 +193,14 @@
         </div>
       </div>
     </div>
+    <paper-dialog on-iron-overlay-closed="closeVideo" id="popover" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+        <div class="wrap">
+            <div class="content">
+              <iframe src$="[[videoEmbedUrl]]" class="videoFrame" allowtransparency="true" frameborder="0" scrolling="no" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen></iframe>
+            </div>
+        </div>
+    </paper-dialog>
   </template>
-
   <script>
     /**
      * Number.prototype.format(n, x)
@@ -160,6 +235,14 @@
               version: 'v1.0.4'
             };
           }
+        },
+        videoOpened: {
+          type: Boolean,
+          value: false
+        },
+        videoEmbedUrl: {
+          type: String,
+          computed: 'getVideoEmbedUrl(videoOpened)'
         },
         videoId: {
           type: String,
@@ -264,9 +347,23 @@
           notify: true
         }
       },
+      getVideoEmbedUrl: function(opened) {
+        if (!!!opened) return '';
+        if (!!opened) return `//fast.wistia.net/embed/iframe/${this.videoId}?autoPlay=true`;
+        return '';
+      },
+      openVideo: function() {
+        this.$.popover.open();
+        this.$.popover.height = this.$.popover.width;
+        this.videoOpened = true;
+      },
+      closeVideo: function() {
+        this.videoOpened = false;
+      },
       _dataChanged: function(newValue, oldValue) {
         this._hasData = (!!newValue && !!newValue.media);
         if (this._hasData) {
+          this.$.thumb.src = newValue.media.embed_options.stillUrl;
           this.views = newValue.media.stats.loadCount;
           var elem = document.createElement('textarea');
           elem.innerHTML = newValue.media.name;
@@ -278,13 +375,13 @@
       },
       _refreshChanged: function(newValue, oldValue) {
         if (newValue != oldValue) {
-          console.log('Auto-Refresh Value Changed from ' + oldValue + ' to ' + newValue);
+          // console.log('Auto-Refresh Value Changed from ' + oldValue + ' to ' + newValue);
           if (newValue) {
-            console.log('Turning Auto-Refresh ON');
+            // console.log('Turning Auto-Refresh ON');
             this._setupRefresh();
           }
           if (!newValue) {
-            console.log('Turning Auto-Refresh OFF');
+            // console.log('Turning Auto-Refresh OFF');
             this._clearRefresh();
           }
         }
@@ -297,10 +394,10 @@
           }, 5000);
       },
       _videoIdChanged: function(n, o) {
-        console.log('new: '+ n, 'old:' + o);
+        // console.log('new: '+ n, 'old:' + o);
         if (!!o) {
-          var vc = this.$.videoContainer;
-          vc.innerHTML = '<span id="video_'+this.uuid+'_'+this.videoId+'" class="wistia_embed wistia_async_'+this.videoId+' playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4 style-scope wistia-video">&nbsp;</span>';
+          // var vc = this.$.videoContainer;
+          // vc.innerHTML = '<span id="video_'+this.uuid+'_'+this.videoId+'" class="wistia_embed wistia_async_'+this.videoId+' playButton=true smallPlayButton=true popover=true popoverAnimateThumbnail=true videoFoam=true playerColor=34b6e4 style-scope wistia-video">&nbsp;</span>';
         }
       },
       _clearRefresh: function() {
@@ -319,6 +416,9 @@
       _formatNumber: function(n) {
         if (!!!n) return "-";
         return n.format();
+      },
+      attached: function() {
+        // console.log('video attached');
       }
     });
   </script>
