@@ -193,13 +193,15 @@
         </div>
       </div>
     </div>
-    <paper-dialog on-iron-overlay-closed="closeVideo" id="popover" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
-        <div class="wrap">
-            <div class="content">
-              <iframe src$="[[videoEmbedUrl]]" class="videoFrame" allowtransparency="true" frameborder="0" scrolling="no" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen></iframe>
-            </div>
-        </div>
-    </paper-dialog>
+    <div id="dialogs" class="clear-fix" align="left">
+      <paper-dialog on-iron-overlay-opened="patchOverlay" on-iron-overlay-closed="closeVideo" id="popover" entry-animation="scale-up-animation" exit-animation="fade-out-animation" with-backdrop>
+          <div class="wrap">
+              <div class="content">
+                <iframe src$="[[videoEmbedUrl]]" class="videoFrame" allowtransparency="true" frameborder="0" scrolling="no" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen></iframe>
+              </div>
+          </div>
+      </paper-dialog>
+    </div>
   </template>
   <script>
     /**
@@ -232,9 +234,13 @@
           value: function() {
             return {
               author: 'Keith A. Hill <keith@dexs.ca>',
-              version: 'v1.0.4'
+              version: 'v2.0.1'
             };
           }
+        },
+        fixOverlay: {
+          type: Boolean,
+          value: true
         },
         videoOpened: {
           type: Boolean,
@@ -408,6 +414,9 @@
         var that = this;
         var count = 0;
         this.uuid = uuid();
+        // var dialogs = this.$.dialogs;
+        // dialogs.remove();
+        // document.querySelector('body').appendChild(dialogs);
       },
       _howLongAgo: function(modified, n) {
         if (!!!modified) return "-";
@@ -419,7 +428,12 @@
       },
       attached: function() {
         // console.log('video attached');
-      }
+      },
+      patchOverlay: function (e) {
+        if (this.fixOverlay && e.target.withBackdrop) {
+          e.target.parentNode.insertBefore(e.target.backdropElement, e.target);
+        }
+      },
     });
   </script>
 </dom-module>
